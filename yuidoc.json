@@ -1,0 +1,8 @@
+{
+	"name": "zs-rediz",
+	"description": "Multifunction redis client library",
+	"options": {
+		"outdir": "./docs",
+		"exclude": "dist,tmp,test,node_modules"
+	}
+}
