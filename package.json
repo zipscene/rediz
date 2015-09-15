@@ -17,6 +17,7 @@
   "dependencies": {
     "babel-runtime": "5.8.24",
     "lodash": "^3.10.1",
+    "redis": "^1.0.0",
     "xerror": "^1.0.0"
   },
   "devDependencies": {
