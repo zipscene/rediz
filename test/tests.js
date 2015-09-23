@@ -25,6 +25,13 @@ describe('Rediz Client', () => {
 				expect(client.shardClientMap).to.be.empty;
 				expect(client.shardClientMap).to.be.an('object');
 				expect(client.clusterClient).to.not.exist;
+				// for raw redis commands
+				expect(client.set).to.exist;
+				expect(client.get).to.exist;
+				expect(client.hkeys).to.exist;
+				expect(client.publish).to.exist;
+				expect(client.eval).to.exist;
+				expect(client.evalsha).to.exist;
 				done();
 			});
 		});
@@ -46,6 +53,13 @@ describe('Rediz Client', () => {
 				expect(client.shardClientMap).to.exist;
 				expect(client.shardClientMap).to.be.empty;
 				expect(client.shardClientMap).to.be.an('object');
+				// for raw redis commands
+				expect(client.set).to.exist;
+				expect(client.get).to.exist;
+				expect(client.hkeys).to.exist;
+				expect(client.publish).to.exist;
+				expect(client.eval).to.exist;
+				expect(client.evalsha).to.exist;
 				done();
 			});
 		});
@@ -67,6 +81,13 @@ describe('Rediz Client', () => {
 				expect(shard).to.be.an.instanceof(RedisCommonClient);
 				expect(shard.registeredScripts).to.exist;
 				expect(shard.registeredScripts).to.be.empty;
+				// for raw redis commands
+				expect(shard.set).to.exist;
+				expect(shard.get).to.exist;
+				expect(shard.hkeys).to.exist;
+				expect(shard.publish).to.exist;
+				expect(shard.eval).to.exist;
+				expect(shard.evalsha).to.exist;
 				done();
 			});
 		});
@@ -131,6 +152,47 @@ describe('Rediz Client', () => {
 					expect(shard.registeredScripts.test.options.numKeyArgs).to.equal(2);
 					done();
 				});
+			});
+		});
+	});
+
+	describe('Unit Test', () => {
+		describe('volatile cluster', () => {
+			let config = {
+				host: 'localhost',
+				port: '6379',
+				volatileCluster: true
+			};
+			let rediz = new RedizClient(config);
+			let shard = rediz.shard('myKey');
+			it('should have a registeredScript on the shard and the client', (done) => {
+				rediz.registerScriptDir('./test/').then( () => {
+					expect(shard.registeredScripts.test).to.exist;
+					expect(shard.registeredScripts.test.options.numKeyArgs).to.equal(2);
+					expect(rediz.registeredScripts.test).to.exist;
+					expect(rediz.registeredScripts.test.options.numKeyArgs).to.equal(2);
+					rediz.runScript('test', 1, 0).then( (result) => {
+						expect(result).to.equal(1);
+						done();
+					}).catch(done);
+				}).catch(done);
+			});
+		});
+
+		describe('non-volatile cluster', () => {
+			let config = {
+				host: 'localhost',
+				port: '6379',
+				volatileCluster: false
+			};
+			let rediz = new RedizClient(config);
+			it('should have a registeredScript on the shard and the client', (done) => {
+				rediz.registerScriptDir('./test/')
+					.then( () => rediz.runScript('test', 1, 0))
+					.then( (result) => {
+						expect(result).to.equal(1);
+						done();
+					}).catch(done);
 			});
 		});
 	});
