@@ -204,8 +204,8 @@ describe('Rediz Client', () => {
 					expect(rediz.registeredScripts.test.options.numKeyArgs).to.equal(2);
 					expect(rediz.shardClientMap).to.not.be.empty;
 				})
-				.then( () => rediz.runScript('test', 1, 0) )
-				.then( (result) => expect(result).to.equal(1) );
+				.then( () => rediz.runScript('test', 'aKey', 'bKey', 1) )
+				.then( (result) => expect(result).to.equal(11) );
 			});
 
 			it('should run a script on a shard when the script was registered after the shard was created', () => {
@@ -218,8 +218,8 @@ describe('Rediz Client', () => {
 					expect(rediz.registeredScripts.test.options.numKeyArgs).to.equal(2);
 					expect(rediz.shardClientMap).to.not.be.empty;
 				})
-				.then( () => shard.runScript('test', 1, 0) )
-				.then( (result) => expect(result).to.equal(1) );
+				.then( () => shard.runScript('test', 'aKey', 'bKey', 2) )
+				.then( (result) => expect(result).to.equal(8) );
 			});
 			it('should run a script on a shard when the script was registered before the shard was created', () => {
 				let rediz = new RedizClient(config);
@@ -231,10 +231,10 @@ describe('Rediz Client', () => {
 					expect(rediz.registeredScripts.test).to.exist;
 					expect(rediz.registeredScripts.test.options.numKeyArgs).to.equal(2);
 				})
-				.then( () => shard.runScript('test', 1, 0) )
+				.then( () => shard.runScript('test', 'aKey', 'bKey', 0) )
 				.then( (result) => {
 					expect(rediz.shardClientMap).to.not.be.empty;
-					expect(result).to.equal(1);
+					expect(result).to.equal(10);
 				});
 			});
 		});
@@ -248,9 +248,9 @@ describe('Rediz Client', () => {
 			let rediz = new RedizClient(config);
 			it('should register a script and run it', () => {
 				return rediz.registerScriptDir(__dirname + '/resources/lua/')
-					.then( () => rediz.runScript('test', 1, 0))
+					.then( () => rediz.runScript('test', 'aKey', 'aKey', 5))
 					.then( (result) => {
-						expect(result).to.equal(1);
+						expect(result).to.equal(11);
 					});
 			});
 		});

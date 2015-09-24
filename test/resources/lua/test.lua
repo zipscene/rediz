@@ -1,10 +1,14 @@
 local numKeyArgs = 2
-if redis.call("exists", KEYS[1]) == 1 then
-	return 0
+if tonumber(ARGV[1]) > 1 then
+	redis.call("set", KEYS[2], ARGV[1]);
+	redis.call("incrby", KEYS[2], 6);
+	local result = redis.call("get", KEYS[2]);
+	redis.call("del", KEYS[2]);
+	return tonumber(result);
 else
-	redis.call("incr", KEYS[2])
-	if ARGV[1] ~= 0 and ARGV[1] ~= "0" then
-		redis.call("expire", KEYS[2], ARGV[1])
-	end
-	return 1
+	redis.call("set", KEYS[1], ARGV[1]);
+	redis.call("incrby", KEYS[1], 10);
+	local result = redis.call("get", KEYS[1]);
+	redis.call("del", KEYS[1]);
+	return tonumber(result);
 end
