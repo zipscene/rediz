@@ -5,6 +5,13 @@ const redis = require('redis');
 const RedizPromiseWrapper = require('../lib/rediz-promise-wrapper');
 const RedisCommonClient = require('../lib/redis-client-common');
 
+let SCRIPT_TEXT = 'local numKeyArgs = 1\n\r' +
+					'redis.call("set", KEYS[1], ARGV[1])\n\r' +
+					'redis.call("incr", KEYS[1])\n\r' +
+					'local result = redis.call("get", KEYS[1])\n\r' +
+					'redis.call("del", KEYS[1])\n\r' +
+					'return result';
+
 describe('Rediz Client', () => {
 
 	describe('constructor', () => {
@@ -134,20 +141,14 @@ describe('Rediz Client', () => {
 			let client = new RedizClient(config);
 
 			it('should register a script', () => {
-				let scriptText = 'local numKeyArgs = 2\n\r' +
-					'redis.call("set", KEYS[1], ARGV[1])\n\r' +
-					'redis.call("incr", KEYS[1])\n\r' +
-					'local result = redis.call("get", KEYS[1])\n\r' +
-					'redis.call("del", KEYS[1])\n\r' +
-					'return result';
-				let register = client.registerScript('test', scriptText);
+				let register = client.registerScript('test', SCRIPT_TEXT);
 				return register.then( () => {
 					expect(client.registeredScripts.test).to.exist;
-					expect(client.registeredScripts.test.scriptText).to.equal(scriptText);
-					expect(client.registeredScripts.test.options.numKeyArgs).to.equal(2);
+					expect(client.registeredScripts.test.scriptText).to.equal(SCRIPT_TEXT);
+					expect(client.registeredScripts.test.options.numKeyArgs).to.equal(1);
 				})
 				.then( () => client.runScript('test', 'key', 1) )
-				.then( (result) => expect(result).to.equal('1') );
+				.then( (result) => expect(result).to.equal('2') );
 			});
 		});
 
@@ -158,25 +159,30 @@ describe('Rediz Client', () => {
 				volatileCluster: true
 			};
 			let client = new RedizClient(config);
-			it('should register a script to each shard', () => {
+			it('should register a script to each shard that has already been created', () => {
 				let shard = client.shard('myKey');
-				let scriptText = 'local numKeyArgs = 2\n\r' +
-					'redis.call("set", KEYS[1], ARGV[1])\n\r' +
-					'redis.call("incr", KEYS[1])\n\r' +
-					'local result = redis.call("get", KEYS[1])\n\r' +
-					'redis.call("del", KEYS[1])\n\r' +
-					'return result';
-				let register = client.registerScript('test', scriptText);
+				let register = client.registerScript('test', SCRIPT_TEXT);
 				return register.then( () => {
 					expect(client.registeredScripts.test).to.exist;
-					expect(client.registeredScripts.test.scriptText).to.equal(scriptText);
-					expect(client.registeredScripts.test.options.numKeyArgs).to.equal(2);
+					expect(client.registeredScripts.test.scriptText).to.equal(SCRIPT_TEXT);
+					expect(client.registeredScripts.test.options.numKeyArgs).to.equal(1);
 					expect(shard.registeredScripts.test).to.exist;
-					expect(shard.registeredScripts.test.scriptText).to.equal(scriptText);
-					expect(shard.registeredScripts.test.options.numKeyArgs).to.equal(2);
+					expect(shard.registeredScripts.test.scriptText).to.equal(SCRIPT_TEXT);
+					expect(shard.registeredScripts.test.options.numKeyArgs).to.equal(1);
 				})
 				.then( () => client.runScript('test', 'key', 1) )
-				.then( (result) => expect(result).to.equal('1') );
+				.then( (result) => expect(result).to.equal('2') );
+			});
+			it('should register all current script to each new shard', () => {
+				let register = client.registerScript('test', SCRIPT_TEXT);
+				return register.then( () => {
+					let shard = client.shard('myKey');
+					expect(shard.registeredScripts.test).to.exist;
+					expect(shard.registeredScripts.test.scriptText).to.equal(SCRIPT_TEXT);
+					expect(shard.registeredScripts.test.options.numKeyArgs).to.equal(1);
+				})
+				.then( () => client.runScript('test', 'key', 1) )
+				.then( (result) => expect(result).to.equal('2') );
 			});
 		});
 	});
@@ -188,16 +194,48 @@ describe('Rediz Client', () => {
 				port: '6379',
 				volatileCluster: true
 			};
-			let rediz = new RedizClient(config);
-			let shard = rediz.shard('myKey');
-			it('should have a registeredScript on the shard and the client', () => {
-				rediz.registerScriptDir(__dirname + '/resources/lua/').then( () => {
+			it('should register a script on master and all shards then run on master', () => {
+				let rediz = new RedizClient(config);
+				let shard = rediz.shard('myKey');
+				return rediz.registerScriptDir(__dirname + '/resources/lua/').then( () => {
 					expect(shard.registeredScripts.test).to.exist;
 					expect(shard.registeredScripts.test.options.numKeyArgs).to.equal(2);
 					expect(rediz.registeredScripts.test).to.exist;
 					expect(rediz.registeredScripts.test.options.numKeyArgs).to.equal(2);
-				}).then( () => rediz.runScript('test', 1, 0) )
+					expect(rediz.shardClientMap).to.not.be.empty;
+				})
+				.then( () => rediz.runScript('test', 1, 0) )
 				.then( (result) => expect(result).to.equal(1) );
+			});
+
+			it('should run a script on a shard when the script was registered after the shard was created', () => {
+				let rediz = new RedizClient(config);
+				let shard = rediz.shard('myKey');
+				return rediz.registerScriptDir(__dirname + '/resources/lua/').then( () => {
+					expect(shard.registeredScripts.test).to.exist;
+					expect(shard.registeredScripts.test.options.numKeyArgs).to.equal(2);
+					expect(rediz.registeredScripts.test).to.exist;
+					expect(rediz.registeredScripts.test.options.numKeyArgs).to.equal(2);
+					expect(rediz.shardClientMap).to.not.be.empty;
+				})
+				.then( () => shard.runScript('test', 1, 0) )
+				.then( (result) => expect(result).to.equal(1) );
+			});
+			it('should run a script on a shard when the script was registered before the shard was created', () => {
+				let rediz = new RedizClient(config);
+				let shard;
+				return rediz.registerScriptDir(__dirname + '/resources/lua/').then( () => {
+					shard = rediz.shard('myKey');
+					expect(shard.registeredScripts.test).to.exist;
+					expect(shard.registeredScripts.test.options.numKeyArgs).to.equal(2);
+					expect(rediz.registeredScripts.test).to.exist;
+					expect(rediz.registeredScripts.test.options.numKeyArgs).to.equal(2);
+				})
+				.then( () => shard.runScript('test', 1, 0) )
+				.then( (result) => {
+					expect(rediz.shardClientMap).to.not.be.empty;
+					expect(result).to.equal(1);
+				});
 			});
 		});
 
@@ -208,7 +246,7 @@ describe('Rediz Client', () => {
 				volatileCluster: false
 			};
 			let rediz = new RedizClient(config);
-			it('should have a registeredScript on the shard and the client', () => {
+			it('should register a script and run it', () => {
 				return rediz.registerScriptDir(__dirname + '/resources/lua/')
 					.then( () => rediz.runScript('test', 1, 0))
 					.then( (result) => {
