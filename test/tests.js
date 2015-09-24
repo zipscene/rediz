@@ -6,11 +6,11 @@ const RedizPromiseWrapper = require('../lib/rediz-promise-wrapper');
 const RedisCommonClient = require('../lib/redis-client-common');
 
 let SCRIPT_TEXT = 'local numKeyArgs = 1\n\r' +
-					'redis.call("set", KEYS[1], ARGV[1])\n\r' +
-					'redis.call("incr", KEYS[1])\n\r' +
-					'local result = redis.call("get", KEYS[1])\n\r' +
-					'redis.call("del", KEYS[1])\n\r' +
-					'return result';
+	'redis.call("set", KEYS[1], ARGV[1])\n\r' +
+	'redis.call("incr", KEYS[1])\n\r' +
+	'local result = redis.call("get", KEYS[1])\n\r' +
+	'redis.call("del", KEYS[1])\n\r' +
+	'return result';
 
 describe('Rediz Client', () => {
 
