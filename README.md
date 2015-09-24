@@ -15,6 +15,7 @@ Example:
 let RedizClient = require('zs-rediz');
 let rediz = new RedizClient({ host: 'localhost', port: 6379, volatileCluster: true });
 rediz.shard('foo').set('foo', 'test value').then(...);
+rediz.set('foo', 'test value').then(...);
 
 rediz.registerScriptDir('/path/to/redis/scripts');
 rediz.runScript('doSomething', arg1, arg2).then(...);
