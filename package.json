@@ -1,6 +1,6 @@
 {
   "name": "zs-rediz",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Multifunction redis client library",
   "main": "./dist/lib/index.js",
   "repository": {
