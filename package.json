@@ -21,6 +21,7 @@
     "pasync": "^1.4.0",
     "redis": "^1.0.0",
     "xerror": "^1.0.0",
+    "zs-simple-profiler": "^1.2.4",
     "zs-volatile-redis-cluster": "^1.0.0"
   },
   "devDependencies": {
