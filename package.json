@@ -1,6 +1,6 @@
 {
   "name": "zs-rediz",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Multifunction redis client library",
   "main": "./dist/lib/index.js",
   "repository": {
@@ -21,8 +21,8 @@
     "pasync": "^1.4.0",
     "redis": "^1.0.0",
     "xerror": "^1.0.0",
-    "zs-simple-profiler": "^1.2.4",
-    "zs-volatile-redis-cluster": "^1.0.0"
+    "zs-simple-profiler": "^1.2.5",
+    "zs-volatile-redis-cluster": "^1.1.1"
   },
   "devDependencies": {
     "broccoli": "^0.16.8",
