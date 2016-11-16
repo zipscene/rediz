@@ -1,6 +1,10 @@
+// Copyright 2016 Zipscene, LLC
+// Licensed under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 let expect = require('chai').expect;
 let RedizClient = require('../lib/rediz-client');
-const ClusterClient = require('zs-volatile-redis-cluster');
+const ClusterClient = require('volatile-redis-cluster');
 const redis = require('redis');
 const RedizPromiseWrapper = require('../lib/rediz-promise-wrapper');
 const RedisCommonClient = require('../lib/redis-client-common');

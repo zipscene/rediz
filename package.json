@@ -1,12 +1,15 @@
 {
-  "name": "zs-rediz",
+  "name": "rediz",
   "version": "1.0.1",
   "description": "Multifunction redis client library",
   "main": "./dist/lib/index.js",
   "repository": {
     "type": "git",
-    "url": "git@git.zipscene.com:zsapilibs/zs-rediz.git"
+    "url": "https://github.com/zipscene/rediz.git"
   },
+  "keywords": [
+    "redis"
+  ],
   "scripts": {
     "lint": "node ./node_modules/.bin/eslint . || exit 0",
     "docs": "node ./node_modules/.bin/yuidoc .",
@@ -21,8 +24,8 @@
     "pasync": "^1.4.0",
     "redis": "^1.0.0",
     "xerror": "^1.0.0",
-    "zs-simple-profiler": "^1.2.5",
-    "zs-volatile-redis-cluster": "^1.1.1"
+    "simprof": "^1.2.5",
+    "volatile-redis-cluster": "^1.1.1"
   },
   "devDependencies": {
     "broccoli": "^0.16.8",
@@ -38,7 +41,5 @@
     "source-map-support": "^0.3.2",
     "yuidocjs": "^0.9.0"
   },
-  "publishConfig": {
-    "registry": "https://npm.zipscene.com/"
-  }
+  "license": "Apache-2.0"
 }

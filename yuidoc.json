@@ -1,5 +1,5 @@
 {
-	"name": "zs-rediz",
+	"name": "rediz",
 	"description": "Multifunction redis client library",
 	"options": {
 		"outdir": "./docs",

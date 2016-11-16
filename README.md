@@ -1,4 +1,4 @@
-# zs-rediz
+# rediz
 
 Multifunction redis client library.  In general, mimics the interface of `node-redis`.
 
@@ -14,7 +14,7 @@ Has the following features:
 
 ### Example of non-volatile cluster.
 ```js
-let RedizClient = require('zs-rediz');
+let RedizClient = require('rediz');
 let rediz = new RedizClient({ host: 'localhost', port: 6379, volatileCluster: false });
 
 rediz.registerScriptDir('/path/to/redis/scripts');
@@ -23,7 +23,7 @@ rediz.runScript('doSomething', arg1, arg2).then(...);
 
 ### Example of volatile cluster
 ```js
-let RedizClient = require('zs-rediz');
+let RedizClient = require('rediz');
 let rediz = new RedizClient({ host: 'localhost', port: 6379, volatileCluster: true });
 let shard = rediz.shard('myKey');
 
@@ -38,7 +38,7 @@ Registering scripts can be done on either master or any of the shards. If it is 
 ### Example register a script from a single file.
 **NOTE** when registering a script from a file, or a directory, the script will be parsed to find the numKeyArgs for redis. So make sure that is defined at the top of the file.
 ```js
-let RedizClient = require('zs-rediz');
+let RedizClient = require('rediz');
 let rediz = new RedizClient({ host: 'localhost', port: 6379, volatileCluster: true });
 
 rediz.registerScriptFile('test', 'path/to/redis/script.lua');
@@ -53,7 +53,7 @@ let scriptText = 'local numKeyArgs = 1\n\r' +
 	'redis.call("del", KEYS[1])\n\r' +
 	'return result';
 
-let RedizClient = require('zs-rediz');
+let RedizClient = require('rediz');
 let rediz = new RedizClient({ host: 'localhost', port: 6379, volatileCluster: true });
 let shard;
 
