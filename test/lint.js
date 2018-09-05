@@ -5,7 +5,6 @@
 let spawn = require('child_process').spawn;
 
 describe('Linter', function() {
-
 	it('should not have any linter problems', function(done) {
 
 		this.timeout(60000);
@@ -25,8 +24,8 @@ describe('Linter', function() {
 			done();
 		}
 
-		let lintProc = spawn('node', [ __dirname + '/../../node_modules/.bin/eslint', '.' ], {
-			cwd: __dirname + '/../..'
+		let lintProc = spawn('node', [ __dirname + '/../node_modules/.bin/eslint', '.' ], {
+			cwd: __dirname + '/..'
 		});
 
 		lintProc.on('error', function(error) {
@@ -44,5 +43,4 @@ describe('Linter', function() {
 		});
 
 	});
-
 });
