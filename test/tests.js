@@ -19,6 +19,10 @@ describe('Rediz Client', () => {
 
 	describe('constructor', () => {
 
+		let client;
+
+		afterEach(() => client.disconnect());
+
 		describe('non-volatile Cluster', () => {
 			it('should create a redis client and not a clusterClient', (done) => {
 				let config = {
@@ -26,7 +30,7 @@ describe('Rediz Client', () => {
 					port: '8080',
 					volatileCluster: false
 				};
-				let client = new RedizClient(config);
+				client = new RedizClient(config);
 				expect(client.registeredScripts).to.exist;
 				expect(client.registeredScripts).to.be.an('object');
 				expect(client.registeredScripts).to.be.empty;
@@ -44,7 +48,7 @@ describe('Rediz Client', () => {
 					port: '6379',
 					volatileCluster: false
 				};
-				let client = new RedizClient(config);
+				client = new RedizClient(config);
 				let key = 'foo';
 				let value = 'bar';
 				return client.set(key, value)
@@ -60,7 +64,7 @@ describe('Rediz Client', () => {
 					port: '6379',
 					volatileCluster: true
 				};
-				let client = new RedizClient(config);
+				client = new RedizClient(config);
 				expect(client.registeredScripts).to.exist;
 				expect(client.registeredScripts).to.be.an('object');
 				expect(client.registeredScripts).to.be.empty;
@@ -79,7 +83,7 @@ describe('Rediz Client', () => {
 					port: '6379',
 					volatileCluster: true
 				};
-				let client = new RedizClient(config);
+				client = new RedizClient(config);
 				let key = 'foo';
 				let value = 'bar';
 				return client.set(key, value)
@@ -115,6 +119,7 @@ describe('Rediz Client', () => {
 					.then( () => shard.get(key) )
 					.then( (result) => expect(result).to.equal(value));
 			});
+			after(() => client.disconnect());
 		});
 
 		describe('volatile cluster', () => {
@@ -131,6 +136,8 @@ describe('Rediz Client', () => {
 				expect(shard).to.be.an.instanceof(RedizPromiseWrapper);
 				done();
 			});
+
+			after(() => client.disconnect());
 		});
 	});
 
@@ -153,6 +160,8 @@ describe('Rediz Client', () => {
 					.then( () => client.runScript('test', 'key', 1) )
 					.then( (result) => expect(result).to.equal('2') );
 			});
+
+			after(() => client.disconnect());
 		});
 
 		describe('volatile cluster', () => {
@@ -187,6 +196,8 @@ describe('Rediz Client', () => {
 					.then( () => client.runScript('test', 'key', 1) )
 					.then( (result) => expect(result).to.equal('2') );
 			});
+
+			after(() => client.disconnect());
 		});
 	});
 
@@ -197,8 +208,12 @@ describe('Rediz Client', () => {
 				port: '6379',
 				volatileCluster: true
 			};
+			let rediz;
+
+			afterEach(() => rediz.disconnect());
+
 			it('should register a script on master and all shards then run on master', () => {
-				let rediz = new RedizClient(config);
+				rediz = new RedizClient(config);
 				let shard = rediz.shard('myKey');
 				return rediz.registerScriptDir(__dirname + '/resources/lua/').then( () => {
 					expect(shard.registeredScripts.test).to.exist;
@@ -212,7 +227,7 @@ describe('Rediz Client', () => {
 			});
 
 			it('should run a script on a shard when the script was registered after the shard was created', () => {
-				let rediz = new RedizClient(config);
+				rediz = new RedizClient(config);
 				let shard = rediz.shard('myKey');
 				return rediz.registerScriptDir(__dirname + '/resources/lua/').then( () => {
 					expect(shard.registeredScripts.test).to.exist;
@@ -225,7 +240,7 @@ describe('Rediz Client', () => {
 					.then( (result) => expect(result).to.equal(8) );
 			});
 			it('should run a script on a shard when the script was registered before the shard was created', () => {
-				let rediz = new RedizClient(config);
+				rediz = new RedizClient(config);
 				let shard;
 				return rediz.registerScriptDir(__dirname + '/resources/lua/').then( () => {
 					shard = rediz.shard('myKey');
@@ -256,6 +271,7 @@ describe('Rediz Client', () => {
 						expect(result).to.equal(11);
 					});
 			});
+			after(() => rediz.disconnect());
 		});
 	});
 });
