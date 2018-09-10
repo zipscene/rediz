@@ -1,6 +1,6 @@
 {
   "name": "rediz",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "description": "Multifunction redis client library",
   "main": "./lib/index.js",
   "repository": {
@@ -13,24 +13,25 @@
   "scripts": {
     "lint": "node ./node_modules/.bin/eslint . || exit 0",
     "docs": "node ./node_modules/.bin/yuidoc .",
-    "test": "node ./node_modules/.bin/mocha ./test -R spec",
-    "prepublishOnly": "npm run-script docs"
+    "test": "node ./node_modules/.bin/mocha ./test -R spec"
   },
   "dependencies": {
     "fs-extra": "^7.0.0",
     "lodash": "^4.17.10",
     "pasync": "^1.5.0",
     "redis": "^2.8.0",
-    "simprof": "^1.3.0",
+    "simprof": "^2.0.0",
     "volatile-redis-cluster": "^2.1.0",
     "xerror": "^1.1.2"
   },
   "devDependencies": {
     "chai": "^4.1.2",
-    "es6-promise": "^4.2.4",
     "eslint": "^5.5.0",
     "mocha": "^5.2.0",
     "yuidocjs": "^0.10.2"
   },
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">= 8.0.0"
+  }
 }
