@@ -1,6 +1,6 @@
 {
   "name": "rediz",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "description": "Multifunction redis client library",
   "main": "./lib/index.js",
   "repository": {
