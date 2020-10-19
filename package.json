@@ -1,6 +1,6 @@
 {
   "name": "rediz",
-  "version": "3.1.3",
+  "version": "4.0.0",
   "description": "Multifunction redis client library",
   "main": "./lib/index.js",
   "repository": {
@@ -12,27 +12,24 @@
   ],
   "scripts": {
     "lint": "node ./node_modules/.bin/eslint . || exit 0",
-    "docs": "node ./node_modules/.bin/yuidoc .",
-    "test": "node ./node_modules/.bin/mocha ./test -R spec",
-    "prepublishOnly": "npm run-script docs"
+    "test": "node ./node_modules/.bin/mocha ./test -R spec"
   },
   "dependencies": {
-    "fs-extra": "^7.0.0",
-    "lodash": "^4.17.11",
-    "pasync": "^1.5.0",
-    "redis": "^2.8.0",
-    "simprof": "^2.1.0",
-    "volatile-redis-cluster": "^2.2.0",
-    "xerror": "^1.1.2"
+    "fs-extra": "^9.0.1",
+    "lodash": "^4.17.20",
+    "pasync": "^2.0.1",
+    "redis": "^3.0.2",
+    "simprof": "^3.0.0",
+    "volatile-redis-cluster": "^3.0.0",
+    "xerror": "^2.0.0"
   },
   "devDependencies": {
-    "chai": "^4.1.2",
-    "eslint": "^5.6.0",
-    "mocha": "^5.2.0",
-    "yuidocjs": "^0.10.2"
+    "chai": "^4.2.0",
+    "eslint": "^7.8.1",
+    "mocha": "^8.1.3"
   },
   "license": "Apache-2.0",
   "engines": {
-    "node": ">= 8.0.0"
+    "node": ">= 14.0.0"
   }
 }
